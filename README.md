@@ -1,5 +1,8 @@
 # Movie Publication Website
 
+
+
+
 A professional movie publication website built with Django, PostgreSQL, and Tailwind CSS.
 
 ## Features
