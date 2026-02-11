@@ -1,0 +1,6 @@
+Django==6.0.2
+psycopg2-binary==2.9.11
+django-tailwind==4.4.2
+django-browser-reload==1.21.0
+Pillow==10.2.0
+cookiecutter==2.6.0

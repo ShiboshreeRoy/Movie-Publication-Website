@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 max-w-md">
+    <div class="bg-gray-800 rounded-lg p-8 mt-12">
+        <h1 class="text-3xl font-bold mb-6 text-center">Login</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label for="{{ form.username.id_for_label }}" class="block text-gray-300 mb-2">Username</label>
+                {{ form.username }}
+            </div>
+            
+            <div class="mb-6">
+                <label for="{{ form.password.id_for_label }}" class="block text-gray-300 mb-2">Password</label>
+                {{ form.password }}
+            </div>
+            
+            {% if form.errors %}
+                <div class="alert alert-danger bg-red-900 text-red-200 p-3 rounded mb-4">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+            
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded">
+                Login
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <p class="text-gray-400">Don't have an account? <a href="{% url 'register' %}" class="text-red-500 hover:text-red-400">Sign up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

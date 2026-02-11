@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% load static tailwind_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movie Publication Website{% endblock %}</title>
+    <script src="{% static 'tailwind.css' %}"></script>
+    <script src="{% static 'theme.js' %}"></script>
+    {% tailwind_css %}
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gray-800 shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{% url 'home' %}" class="text-2xl font-bold text-red-600">MovieHub</a>
+            
+            <nav class="hidden md:flex space-x-6">
+                <a href="{% url 'home' %}" class="hover:text-red-500 transition">Home</a>
+                <a href="{% url 'movies:movies_list' %}" class="hover:text-red-500 transition">Movies</a>
+                <a href="{% url 'movies:series_list' %}" class="hover:text-red-500 transition">TV Shows</a>
+                <a href="{% url 'movies:categories_list' %}" class="hover:text-red-500 transition">Genres</a>
+            </nav>
+            
+            <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                    <span class="mr-4">Welcome, {{ user.username }}</span>
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin:index' %}" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded">Admin</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded">Login</a>
+                    <a href="{% url 'register' %}" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mb-4 p-4 bg-gray-800 rounded">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-8 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2026 MovieHub. All rights reserved.</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <a href="#" class="hover:text-red-500">About Us</a>
+                <a href="#" class="hover:text-red-500">Contact</a>
+                <a href="#" class="hover:text-red-500">Privacy Policy</a>
+                <a href="#" class="hover:text-red-500">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

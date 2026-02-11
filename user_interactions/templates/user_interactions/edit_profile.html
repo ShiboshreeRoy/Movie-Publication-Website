@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 max-w-2xl">
+    <h1 class="text-3xl font-bold mb-8">Edit Profile</h1>
+    
+    <div class="bg-gray-800 rounded-lg p-6">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="mb-6">
+                <label class="block text-gray-300 mb-2">Preferred Language</label>
+                <input type="text" name="preferred_language" value="{{ profile.preferred_language }}" 
+                       class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-300 mb-2">Country</label>
+                <input type="text" name="country" value="{{ profile.country|default:'' }}" 
+                       class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-300 mb-2">Date of Birth</label>
+                <input type="date" name="date_of_birth" value="{{ profile.date_of_birth|date:'Y-m-d'|default:'' }}" 
+                       class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-300 mb-2">Favorite Genres</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {% for category in categories %}
+                    <label class="flex items-center">
+                        <input type="checkbox" name="favorite_genres" value="{{ category.id }}" 
+                               {% if category in profile.favorite_genres.all %}checked{% endif %}
+                               class="mr-2">
+                        <span>{{ category.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded">
+                Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

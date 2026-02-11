@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">My Profile</h1>
+        
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">Profile Information</h2>
+                <a href="{% url 'user_interactions:edit_profile' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                    Edit Profile
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-gray-400">Username</p>
+                    <p class="text-lg">{{ user.username }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-gray-400">Email</p>
+                    <p class="text-lg">{{ user.email|default:"Not provided" }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-gray-400">Preferred Language</p>
+                    <p class="text-lg">{{ profile.preferred_language }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-gray-400">Country</p>
+                    <p class="text-lg">{{ profile.country|default:"Not specified" }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-gray-400">Date of Birth</p>
+                    <p class="text-lg">{{ profile.date_of_birth|default:"Not specified" }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-gray-400">Favorite Genres</p>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        {% for genre in profile.favorite_genres.all %}
+                        <span class="bg-gray-700 px-3 py-1 rounded">{{ genre.name }}</span>
+                        {% empty %}
+                        <span class="text-gray-400">None specified</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Activity -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Ratings -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">My Ratings</h2>
+                
+                {% if ratings %}
+                <div class="space-y-3">
+                    {% for rating in ratings %}
+                    <div class="bg-gray-700 p-3 rounded">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                {% if rating.movie %}
+                                <p class="font-bold">{{ rating.movie.title }}</p>
+                                <p class="text-sm text-gray-400">Movie</p>
+                                {% elif rating.series %}
+                                <p class="font-bold">{{ rating.series.title }}</p>
+                                <p class="text-sm text-gray-400">TV Show</p>
+                                {% elif rating.episode %}
+                                <p class="font-bold">{{ rating.episode.title }}</p>
+                                <p class="text-sm text-gray-400">Episode</p>
+                                {% endif %}
+                            </div>
+                            <div class="text-yellow-400 font-bold">{{ rating.rating }}★</div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-1">{{ rating.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-400">You haven't rated anything yet.</p>
+                {% endif %}
+            </div>
+            
+            <!-- Reviews -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">My Reviews</h2>
+                
+                {% if reviews %}
+                <div class="space-y-3">
+                    {% for review in reviews %}
+                    <div class="bg-gray-700 p-3 rounded">
+                        <div>
+                            <h3 class="font-bold">{{ review.title }}</h3>
+                            {% if review.movie %}
+                            <p class="text-sm text-gray-400">Movie: {{ review.movie.title }}</p>
+                            {% elif review.series %}
+                            <p class="text-sm text-gray-400">TV Show: {{ review.series.title }}</p>
+                            {% elif review.episode %}
+                            <p class="text-sm text-gray-400">Episode: {{ review.episode.title }}</p>
+                            {% endif %}
+                        </div>
+                        <p class="text-sm text-gray-300 mt-2 truncate">{{ review.content }}</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ review.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-400">You haven't written any reviews yet.</p>
+                {% endif %}
+            </div>
+            
+            <!-- Downloads -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">My Downloads</h2>
+                
+                {% if downloads %}
+                <div class="space-y-3">
+                    {% for download in downloads %}
+                    <div class="bg-gray-700 p-3 rounded">
+                        <div>
+                            {% if download.movie %}
+                            <p class="font-bold">{{ download.movie.title }}</p>
+                            <p class="text-sm text-gray-400">Movie</p>
+                            {% elif download.episode %}
+                            <p class="font-bold">{{ download.episode.title }}</p>
+                            <p class="text-sm text-gray-400">Episode</p>
+                            {% endif %}
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">{{ download.download_date|date:"M d, Y" }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-400">You haven't downloaded anything yet.</p>
+                {% endif %}
+            </div>
+            
+            <!-- Watch History -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">Watch History</h2>
+                
+                {% if watch_history %}
+                <div class="space-y-3">
+                    {% for history in watch_history %}
+                    <div class="bg-gray-700 p-3 rounded">
+                        <div>
+                            {% if history.movie %}
+                            <p class="font-bold">{{ history.movie.title }}</p>
+                            <p class="text-sm text-gray-400">Movie</p>
+                            {% elif history.episode %}
+                            <p class="font-bold">{{ history.episode.title }}</p>
+                            <p class="text-sm text-gray-400">Episode</p>
+                            {% endif %}
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">{{ history.watched_at|date:"M d, Y" }}</p>
+                        {% if history.progress %}
+                        <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ history.progress|floatformat:0 }}%;"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">{{ history.progress|floatformat:1 }}% watched</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-400">Your watch history is empty.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ series.title }} - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Series Poster and Info -->
+        <div class="lg:col-span-2">
+            <div class="bg-gray-800 rounded-lg overflow-hidden">
+                {% if series.poster %}
+                <img src="{{ series.poster.url }}" alt="{{ series.title }}" class="w-full h-96 object-cover">
+                {% else %}
+                <div class="w-full h-96 bg-gray-700 flex items-center justify-center">
+                    <span class="text-gray-400 text-2xl">{{ series.title }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <h1 class="text-3xl font-bold mb-2">{{ series.title }}</h1>
+                    <div class="flex flex-wrap items-center text-gray-400 mb-4">
+                        <span>{{ series.release_date|date:"Y" }}</span>
+                        <span class="mx-2">•</span>
+                        <span>{{ series.seasons_count }} season{% if series.seasons_count > 1 %}s{% endif %}</span>
+                        <span class="mx-2">•</span>
+                        <span>{{ series.category.name }}</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex items-center mb-2">
+                            <span class="text-yellow-400 mr-2">★</span>
+                            <span class="font-bold">{{ avg_rating|floatformat:1 }} ({{ series.rating_set.count }} ratings)</span>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                        <div class="mt-4">
+                            <form method="POST" action="{% url 'user_interactions:rate_series' series.id %}">
+                                {% csrf_token %}
+                                <label class="block text-sm font-medium mb-2">Rate this series:</label>
+                                <div class="flex space-x-1">
+                                    {% for num in "12345" %}
+                                    <button type="submit" name="rating" value="{{ forloop.counter }}"
+                                            class="w-8 h-8 rounded-full bg-gray-700 hover:bg-yellow-500 flex items-center justify-center {% if user_rating and user_rating.rating >= forloop.counter %}text-yellow-400{% else %}text-gray-400{% endif %}">
+                                        {{ forloop.counter }}
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                            </form>
+                        </div>
+                        {% else %}
+                        <p class="text-gray-400 text-sm"><a href="{% url 'login' %}" class="text-red-500">Log in</a> to rate this series.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="text-gray-300 mb-6">{{ series.description }}</p>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-lg font-bold mb-2">Director</h3>
+                        <p>{{ series.director.name }}</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-lg font-bold mb-2">Cast</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for actor in series.actors.all %}
+                            <span class="bg-gray-700 px-3 py-1 rounded">{{ actor.name }}</span>
+                            {% empty %}
+                            <p class="text-gray-400">No cast information available.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if series.trailer_url %}
+                    <a href="{{ series.trailer_url }}" target="_blank" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded">
+                        Watch Trailer
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Episodes Section -->
+            <div class="mt-8 bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">Episodes</h2>
+                
+                <div class="space-y-4">
+                    {% for episode in episodes %}
+                    <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold">{{ episode.title }}</h3>
+                            <p class="text-sm text-gray-400">Season {{ episode.season_number }}, Episode {{ episode.episode_number }} • {{ episode.duration }} min</p>
+                            <p class="text-sm text-gray-400">{{ episode.release_date|date:"M d, Y" }}</p>
+                        </div>
+                        <a href="{{ episode.get_absolute_url }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                            Watch
+                        </a>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-400">No episodes available yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Reviews Section -->
+            <div class="mt-8 bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">Reviews</h2>
+                
+                {% if user.is_authenticated %}
+                <div class="mb-6 p-4 bg-gray-700 rounded-lg">
+                    <h3 class="text-lg font-bold mb-2">Write a Review</h3>
+                    <form method="POST" action="{% url 'user_interactions:add_review_series' series.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="text" name="title" placeholder="Review Title" required
+                                   class="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2">
+                        </div>
+                        <div class="mb-3">
+                            <textarea name="content" placeholder="Your review..." rows="4" required
+                                      class="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2"></textarea>
+                        </div>
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                            Submit Review
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+                
+                {% for review in reviews %}
+                <div class="border-b border-gray-700 pb-4 mb-4">
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-bold">{{ review.title }}</h4>
+                        <span class="text-sm text-gray-400">{{ review.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <p class="text-gray-300 mt-2">{{ review.content }}</p>
+                    <p class="text-sm text-gray-500 mt-1">By {{ review.user.username }}</p>
+                </div>
+                {% empty %}
+                <p class="text-gray-400">No reviews yet. Be the first to review!</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Related Series -->
+        <div>
+            <h2 class="text-2xl font-bold mb-4">Related TV Shows</h2>
+            <div class="space-y-4">
+                {% for related_series in related_series %}
+                <div class="bg-gray-800 rounded-lg overflow-hidden flex">
+                    {% if related_series.poster %}
+                    <img src="{{ related_series.poster.url }}" alt="{{ related_series.title }}" class="w-16 h-16 object-cover">
+                    {% else %}
+                    <div class="w-16 h-16 bg-gray-700 flex items-center justify-center">
+                        <span class="text-xs text-gray-400">No Image</span>
+                    </div>
+                    {% endif %}
+                    <div class="p-3 flex-grow">
+                        <h3 class="font-bold text-sm truncate">{{ related_series.title }}</h3>
+                        <p class="text-xs text-gray-400">{{ related_series.release_date|date:"Y" }}</p>
+                        <a href="{{ related_series.get_absolute_url }}" class="text-xs text-red-500 hover:text-red-400">View Details</a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-400">No related series available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

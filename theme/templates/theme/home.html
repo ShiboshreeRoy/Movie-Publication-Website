@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - MovieHub{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="mb-12">
+    <div class="bg-gradient-to-r from-red-900 to-black h-96 rounded-xl flex items-center justify-center">
+        <div class="text-center">
+            <h1 class="text-5xl font-bold mb-4">Welcome to MovieHub</h1>
+            <p class="text-xl mb-8">Discover the latest movies and TV shows</p>
+            <a href="{% url 'movies:movies_list' %}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full text-lg">
+                Explore Movies
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Movies -->
+<section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Featured Movies</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+        {% for movie in featured_movies %}
+        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform">
+            {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full h-64 object-cover">
+            {% else %}
+            <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
+                <span class="text-gray-400">{{ movie.title }}</span>
+            </div>
+            {% endif %}
+            <div class="p-4">
+                <h3 class="font-bold text-lg truncate">{{ movie.title }}</h3>
+                <p class="text-gray-400 text-sm">{{ movie.release_date|date:"Y" }}</p>
+                <div class="mt-2 flex justify-between items-center">
+                    <span class="text-yellow-400">{{ movie.rating__avg|floatformat:1 }}★</span>
+                    <a href="{{ movie.get_absolute_url }}" class="text-red-500 hover:text-red-400">Watch</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="col-span-full text-center text-gray-400">No featured movies available.</p>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-6">
+        <a href="{% url 'movies:movies_list' %}" class="inline-block bg-gray-700 hover:bg-gray-600 text-white py-2 px-6 rounded">
+            View All Movies
+        </a>
+    </div>
+</section>
+
+<!-- Featured Series -->
+<section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Featured TV Shows</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+        {% for series in featured_series %}
+        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform">
+            {% if series.poster %}
+            <img src="{{ series.poster.url }}" alt="{{ series.title }}" class="w-full h-64 object-cover">
+            {% else %}
+            <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
+                <span class="text-gray-400">{{ series.title }}</span>
+            </div>
+            {% endif %}
+            <div class="p-4">
+                <h3 class="font-bold text-lg truncate">{{ series.title }}</h3>
+                <p class="text-gray-400 text-sm">{{ series.release_date|date:"Y" }}</p>
+                <div class="mt-2 flex justify-between items-center">
+                    <a href="{{ series.get_absolute_url }}" class="text-red-500 hover:text-red-400">Watch</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="col-span-full text-center text-gray-400">No featured series available.</p>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-6">
+        <a href="{% url 'movies:series_list' %}" class="inline-block bg-gray-700 hover:bg-gray-600 text-white py-2 px-6 rounded">
+            View All TV Shows
+        </a>
+    </div>
+</section>
+
+<!-- Categories -->
+<section>
+    <h2 class="text-3xl font-bold mb-6">Browse by Genre</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
+        {% for category in categories %}
+        <a href="{{ category.get_absolute_url }}" class="bg-gray-800 hover:bg-gray-700 rounded-lg p-4 text-center transition-colors">
+            <span class="font-medium">{{ category.name }}</span>
+        </a>
+        {% empty %}
+        <p class="col-span-full text-center text-gray-400">No categories available.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

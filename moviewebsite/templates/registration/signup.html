@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 max-w-md">
+    <div class="bg-gray-800 rounded-lg p-8 mt-12">
+        <h1 class="text-3xl font-bold mb-6 text-center">Sign Up</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label for="{{ form.username.id_for_label }}" class="block text-gray-300 mb-2">Username</label>
+                {{ form.username }}
+            </div>
+            
+            <div class="mb-4">
+                <label for="{{ form.email.id_for_label }}" class="block text-gray-300 mb-2">Email</label>
+                {{ form.email }}
+            </div>
+            
+            <div class="mb-4">
+                <label for="{{ form.password1.id_for_label }}" class="block text-gray-300 mb-2">Password</label>
+                {{ form.password1 }}
+            </div>
+            
+            <div class="mb-6">
+                <label for="{{ form.password2.id_for_label }}" class="block text-gray-300 mb-2">Confirm Password</label>
+                {{ form.password2 }}
+            </div>
+            
+            {% if form.errors %}
+                <div class="alert alert-danger bg-red-900 text-red-200 p-3 rounded mb-4">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded">
+                Sign Up
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <p class="text-gray-400">Already have an account? <a href="{% url 'login' %}" class="text-red-500 hover:text-red-400">Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
